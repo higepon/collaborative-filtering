@@ -15,7 +15,7 @@
     (newline)
     (/ (innter-product lvec rvec) (* (norm lvec) (norm rvec)))))
 
-(define (hashtable-fold-left1 proc seed ht)
+(define (hashtable-fold-left proc seed ht)
   (let* ([key* (hashtable-keys ht)]
          [len (vector-length key*)])
     (let loop ([i 0]
@@ -24,7 +24,7 @@
        [(= len i) ret]
        [else
         (loop (+ i 1)
-              (proc ret (car key*) (hashtable-ref ht (car key*))))]))))
+              (proc ret (vector-ref key* i) (hashtable-ref ht (vector-ref key* i))))]))))
 
 (define (text->vector text)
   (let ([ht (make-hashtable string-hash string=?)]
@@ -35,7 +35,10 @@
     ht))
 
 (define (norm v)
-  (sqrt (apply + (map (^(key) (expt (hashtable-ref v key 0) 2)) (vector->list (hashtable-keys v))))))
+  (sqrt (hashtable-fold-left
+         (^(seed key value)
+           (+ seed (* value value)))
+         0 v)))
 
 (define (innter-product lhs rhs)
   (let loop ([key* (vector->list (hashtable-keys lhs))]
