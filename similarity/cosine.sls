@@ -15,6 +15,17 @@
     (newline)
     (/ (innter-product lvec rvec) (* (norm lvec) (norm rvec)))))
 
+(define (hashtable-fold-left1 proc seed ht)
+  (let* ([key* (hashtable-keys ht)]
+         [len (vector-length key*)])
+    (let loop ([i 0]
+               [ret seed])
+      (cond
+       [(= len i) ret]
+       [else
+        (loop (+ i 1)
+              (proc ret (car key*) (hashtable-ref ht (car key*))))]))))
+
 (define (text->vector text)
   (let ([ht (make-hashtable string-hash string=?)]
         [word* (string-split text #\space)])
