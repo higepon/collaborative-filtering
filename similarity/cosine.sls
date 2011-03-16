@@ -7,9 +7,9 @@
                  (mosh test))
 
 (define (similarity lhs rhs)
-  3
-  )
-
+  (let ([lvec (text->vector lhs)]
+        [rvec (text->vector rhs)])
+    (/ (innter-product lvec rvec) (* (norm lvec) (norm rvec)))))
 
 (define (text->vector text)
   (let ([ht (make-hashtable string-hash string=?)]
@@ -22,13 +22,24 @@
 (define (norm v)
   (sqrt (apply + (map (^(key) (expt (hashtable-ref v key 0) 2)) (vector->list (hashtable-keys v))))))
 
+(define (innter-product lhs rhs)
+  (let loop ([key* (vector->list (hashtable-keys lhs))]
+             [ret 0.0])
+    (cond
+     [(null? key*) ret]
+     [(hashtable-ref rhs (car key*) #f) =>
+      (^(value)
+        (loop (cdr key*)
+              (+ ret (* (hashtable-ref lhs (car key*) #f) value))))]
+     [else
+      (loop (cdr key*) ret)])))
+
 (define (test)
   (let1 v (text->vector "orange apple orange")
     (test-equal 2 (hashtable-size v))
     (test-equal 1 (hashtable-ref v "apple" 0))
     (test-equal 2 (hashtable-ref v "orange" 0))
     (test-true (good-enough? 2.2360 (norm v))))
-
 )
 
 ;; todo: move
