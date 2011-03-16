@@ -8,3 +8,5 @@
 
 (test-true (> (similarity earthquake-news1 earthquake-news2)
               (similarity earthquake-news1 it-news)))
+
+(test-results)
