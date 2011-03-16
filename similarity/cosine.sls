@@ -9,12 +9,7 @@
 (define (similarity lhs rhs)
   (let ([lvec (text->vector lhs)]
         [rvec (text->vector rhs)])
-    (write (hashtable-size lvec))
-    (newline)
-    (write (hashtable-size rvec))
-    (newline)
     (/ (innter-product lvec rvec) (* (norm lvec) (norm rvec)))))
-
 
 (define (text->vector text)
   (let ([ht (make-hashtable string-hash string=?)]
@@ -50,9 +45,5 @@
     (test-equal 2 (hashtable-ref v "orange" 0))
     (test-true (good-enough? 2.2360 (norm v))))
 )
-
-;; todo: move
-
-
 
 )
