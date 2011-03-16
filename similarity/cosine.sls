@@ -9,6 +9,10 @@
 (define (similarity lhs rhs)
   (let ([lvec (text->vector lhs)]
         [rvec (text->vector rhs)])
+    (write (hashtable-size lvec))
+    (newline)
+    (write (hashtable-size rvec))
+    (newline)
     (/ (innter-product lvec rvec) (* (norm lvec) (norm rvec)))))
 
 (define (text->vector text)
@@ -29,6 +33,7 @@
      [(null? key*) ret]
      [(hashtable-ref rhs (car key*) #f) =>
       (^(value)
+;        (format #t "key=~a (* ~a ~a) = ~a\n" (car key*) (hashtable-ref lhs (car key*) #f) value (* (hashtable-ref lhs (car key*) #f) value))
         (loop (cdr key*)
               (+ ret (* (hashtable-ref lhs (car key*) #f) value))))]
      [else
