@@ -5,6 +5,7 @@
          (export tfidf test)
          (import (rnrs)
                  (shorten)
+                 (match)
                  (mosh)
                  (mosh control)
                  (mosh test))
@@ -24,19 +25,19 @@
 (define (document-count stat word)
   (car (stat-ref stat word)))
 
-(define (word-count stat word)
+(define (word-count stat doc-id word)
   (cdr (stat-ref stat word)))
 
 (define (analyze document*)
   (let1 stat (make-empty-stat)
     (for-each
-     (^d
-      (analyze1 stat d))
+     (match-lambda
+      [(doc-id . document)
+       (analyze1 stat doc-id document)])
      document*)
     stat))
 
-
-(define (analyze1 stat document)
+(define (analyze1 stat doc-id document)
   (let ([word* (string-split document #\space)]
         [seen (make-empty-stat)])
     (for-each
