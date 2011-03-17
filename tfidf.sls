@@ -37,14 +37,21 @@
 
 
 (define (analyze1 stat document)
-  (let1 word* (string-split document #\space)
+  (let ([word* (string-split document #\space)]
+        [seen (make-empty-stat)])
     (for-each
      (^w
       (cond
        [(stat-ref stat w) =>
         (lambda (x)
-          (stat-add! stat w (cons (car x) (+ 1 (cdr x)))))]
+          (cond
+           [(stat-ref seen w)
+            (stat-add! stat w (cons (car x) (+ 1 (cdr x))))]
+           [else
+            (stat-add! seen w #t)
+            (stat-add! stat w (cons (+ 1 (car x)) (+ 1 (cdr x))))]))]
        [else
+        (stat-add! seen w #t)
         (stat-add! stat w (cons 1 1))]))
      word*)))
 
