@@ -5,6 +5,7 @@
          (export tfidf test)
          (import (rnrs)
                  (shorten)
+                 (mosh)
                  (mosh control)
                  (mosh test))
 
@@ -16,6 +17,9 @@
 
 (define (stat-ref stat word)
   (hashtable-ref stat word #f))
+
+(define (stat-add! stat word s)
+  (hashtable-set! stat word s))
 
 (define (document-count stat word)
   (car (stat-ref stat word)))
@@ -33,7 +37,25 @@
 
 
 (define (analyze1 stat document)
-  #f)
+  (let1 word* (string-split document #\space)
+    (for-each
+     (^w
+      (cond
+       [(stat-ref stat w) =>
+        (lambda (x)
+          (stat-add! stat w (cons (car x) (+ 1 (cdr x)))))]
+       [else
+        (stat-add! stat w (cons 1 1))]))
+     word*)))
+
+;; todo: duplicate
+(define (text->vector text)
+  (let ([ht (make-hashtable string-hash string=?)]
+        [word* (string-split text #\space)])
+    (for-each
+     (^w (hashtable-set! ht w (+ (hashtable-ref ht w 0) 1)))
+     word*)
+    ht))
 
 (define (test)
   (let1 stat (make-empty-stat)
