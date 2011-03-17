@@ -11,24 +11,31 @@
 (define (tfidf . x)
   x)
 
+(define (make-empty-stat)
+  (make-hashtable string-hash string=?))
+
+(define (stat-ref stat key)
+  (hashtable-ref stat key #f))
+
 (define (analyze document*)
-  (let1 state (make-hashtable string-hash string=?)
+  (let1 stat (make-empty-stat)
     (for-each
      (^d
-      (analyze1 state d))
+      (analyze1 stat d))
      document*)
-    state))
+    stat))
 
-(define (analyze1 state document)
+
+(define (analyze1 stat document)
   #f)
 
 (define (test)
-  (let1 st (make-hashtable string-hash string=?)
-    (analyze1 st "apple")
-    (test-equal '(1 . 1) (hashtable-ref st "apple" #f)))
-  (let1 st (analyze '("apple orange apple" "apple"))
-    (test-true st)
-    (test-equal '(3 . 2) (hashtable-ref st "apple" #f)))
+  (let1 stat (make-empty-stat)
+    (analyze1 stat "apple")
+    (test-equal '(1 . 1) (stat-ref stat "apple")))
+  (let1 stat (analyze '("apple orange apple" "apple"))
+    (test-true stat)
+    (test-equal '(3 . 2) (stat-ref stat "apple")))
 
 
   )
