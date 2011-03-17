@@ -5,19 +5,19 @@
          (export tfidf test)
          (import (rnrs)
                  (shorten)
+                 (mosh control)
                  (mosh test))
 
 (define (tfidf . x)
   x)
 
 (define (analyze document*)
-  (for-each
-   (^d
-    (analyze1 '() d)
-    )
-   document*)
-  #f
-  )
+  (let1 state (make-hashtable string-hash string=?)
+    (for-each
+     (^d
+      (analyze1 state d))
+     document*)
+    state))
 
 (define (analyze1 state document)
   #f)
