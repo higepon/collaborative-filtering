@@ -18,17 +18,25 @@
      (lambda ()
        (c (make-eq-hashtable) (make-string-hashtable))))))
 
+(define (stat-all-inc! stat word)
+  (let1 all (stat-all stat)
+    (hashtable-set! all word (+ 1 (hashtable-ref all word 0)))))
+
+(define (stat-doc-inc! stat doc-id word)
+  (cond
+   [(hashtable-ref (stat-doc stat) doc-id #f) =>
+    (lambda (doc)
+      (hashtable-set! doc word (+ 1 (hashtable-ref doc word 0))))]
+   [else
+    (let1 doc (make-string-hashtable)
+      (hashtable-set! (stat-doc stat) doc-id doc)
+      (hashtable-set! doc word 1))]))
+
 (define (tfidf . x)
   x)
 
 (define (make-string-hashtable)
   (make-hashtable string-hash string=?))
-
-;; (define (stat-ref stat word)
-;;   (hashtable-ref stat word 0))
-
-;; (define (stat-add! stat word s)
-;;   (hashtable-set! stat word s))
 
 (define (document-count stat word)
   (hashtable-fold-left
@@ -53,20 +61,6 @@
      document*)
     stat))
 
-(define (stat-all-inc! stat word)
-  (let1 all (stat-all stat)
-    (hashtable-set! all word (+ 1 (hashtable-ref all word 0)))))
-
-(define (stat-doc-inc! stat doc-id word)
-  (cond
-   [(hashtable-ref (stat-doc stat) doc-id #f) =>
-    (lambda (doc)
-      (hashtable-set! doc word (+ 1 (hashtable-ref doc word 0))))]
-   [else
-    (let1 doc (make-string-hashtable)
-      (hashtable-set! (stat-doc stat) doc-id doc)
-      (hashtable-set! doc word 1))]))
-
 (define (analyze1 stat doc-id document)
   (let ([word* (string-split document #\space)])
     (for-each
@@ -74,15 +68,6 @@
        (stat-all-inc! stat w)
        (stat-doc-inc! stat doc-id w))
      word*)))
-
-;; ;; todo: duplicate
-;; (define (text->vector text)
-;;   (let ([ht (make-hashtable string-hash string=?)]
-;;         [word* (string-split text #\space)])
-;;     (for-each
-;;      (^w (hashtable-set! ht w (+ (hashtable-ref ht w 0) 1)))
-;;      word*)
-;;     ht))
 
 (define (test)
   (let1 stat (make-stat)
@@ -97,9 +82,4 @@
     (test-equal 2 (document-count stat "apple")))
 
   )
-
-
-
-
-
 )
