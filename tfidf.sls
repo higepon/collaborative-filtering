@@ -16,12 +16,12 @@
   (protocol
    (lambda (c)
      (lambda ()
-       (c (make-eq-hashtable) (make-hashtable string-hash string=?))))))
+       (c (make-eq-hashtable) (make-string-hashtable))))))
 
 (define (tfidf . x)
   x)
 
-(define (make-empty-stat)
+(define (make-string-hashtable)
   (make-hashtable string-hash string=?))
 
 ;; (define (stat-ref stat word)
@@ -63,7 +63,7 @@
     (lambda (doc)
       (hashtable-set! doc word (+ 1 (hashtable-ref doc word 0))))]
    [else
-    (let1 doc (make-empty-stat)
+    (let1 doc (make-string-hashtable)
       (hashtable-set! (stat-doc stat) doc-id doc)
       (hashtable-set! doc word 1))]))
 
