@@ -23,7 +23,9 @@
   #f)
 
 (define (test)
-  (test-true (analyze '("apple orange" "apple")))
+  (let1 st (analyze '("apple orange apple" "apple"))
+    (test-true st)
+    (test-equal '(3 . 2) (hashtable-ref st "apple" #f)))
 
 
   )
