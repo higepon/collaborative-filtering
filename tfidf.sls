@@ -14,8 +14,14 @@
 (define (make-empty-stat)
   (make-hashtable string-hash string=?))
 
-(define (stat-ref stat key)
-  (hashtable-ref stat key #f))
+(define (stat-ref stat word)
+  (hashtable-ref stat word #f))
+
+(define (document-count stat word)
+  (car (stat-ref stat word)))
+
+(define (word-count stat word)
+  (cdr (stat-ref stat word)))
 
 (define (analyze document*)
   (let1 stat (make-empty-stat)
@@ -32,11 +38,12 @@
 (define (test)
   (let1 stat (make-empty-stat)
     (analyze1 stat "apple")
-    (test-equal '(1 . 1) (stat-ref stat "apple")))
+    (test-equal 1 (word-count stat "apple"))
+    (test-equal 1 (document-count stat "apple")))
   (let1 stat (analyze '("apple orange apple" "apple"))
     (test-true stat)
-    (test-equal '(3 . 2) (stat-ref stat "apple")))
-
+    (test-equal 3 (word-count stat "apple"))
+    (test-equal 2 (document-count stat "apple")))
 
   )
 
