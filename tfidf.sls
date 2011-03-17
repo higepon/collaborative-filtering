@@ -9,7 +9,9 @@
   x)
 
 (define (test)
-#f
+  (test-true (analyze '("apple orange" "apple")))
+
+
   )
 
 
