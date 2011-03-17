@@ -10,26 +10,42 @@
                  (mosh control)
                  (mosh test))
 
+(define-record-type stat
+  (fields (immutable doc)
+          (immutable all))
+  (protocol
+   (lambda (c)
+     (lambda ()
+       (c (make-eq-hashtable) (make-hashtable string-hash string=?))))))
+
 (define (tfidf . x)
   x)
 
 (define (make-empty-stat)
   (make-hashtable string-hash string=?))
 
-(define (stat-ref stat word)
-  (hashtable-ref stat word #f))
+;; (define (stat-ref stat word)
+;;   (hashtable-ref stat word 0))
 
-(define (stat-add! stat word s)
-  (hashtable-set! stat word s))
+;; (define (stat-add! stat word s)
+;;   (hashtable-set! stat word s))
 
 (define (document-count stat word)
-  (car (stat-ref stat word)))
+  (hashtable-fold-left
+   (^(seed key st)
+     (+ seed (if (hashtable-ref st word #f) 1 0)))
+   0 (stat-doc stat)))
 
 (define (word-count stat doc-id word)
-  (cdr (stat-ref stat word)))
+  (cond
+   [(hashtable-ref (stat-doc stat) doc-id #f) =>
+    (lambda (x)
+      (hashtable-ref x word 0))]
+   [else
+    (error 'word-count "unknown doc-id" doc-id)]))
 
 (define (analyze document*)
-  (let1 stat (make-empty-stat)
+  (let1 stat (make-stat)
     (for-each
      (match-lambda
       [(doc-id . document)
@@ -37,37 +53,40 @@
      document*)
     stat))
 
+(define (stat-all-inc! stat word)
+  (let1 all (stat-all stat)
+    (hashtable-set! all word (+ 1 (hashtable-ref all word 0)))))
+
+(define (stat-doc-inc! stat doc-id word)
+  (cond
+   [(hashtable-ref (stat-doc stat) doc-id #f) =>
+    (lambda (doc)
+      (hashtable-set! doc word (+ 1 (hashtable-ref doc word 0))))]
+   [else
+    (let1 doc (make-empty-stat)
+      (hashtable-set! (stat-doc stat) doc-id doc)
+      (hashtable-set! doc word 1))]))
+
 (define (analyze1 stat doc-id document)
-  (let ([word* (string-split document #\space)]
-        [seen (make-empty-stat)])
+  (let ([word* (string-split document #\space)])
     (for-each
      (^w
-      (cond
-       [(stat-ref stat w) =>
-        (lambda (x)
-          (cond
-           [(stat-ref seen w)
-            (stat-add! stat w (cons (car x) (+ 1 (cdr x))))]
-           [else
-            (stat-add! seen w #t)
-            (stat-add! stat w (cons (+ 1 (car x)) (+ 1 (cdr x))))]))]
-       [else
-        (stat-add! seen w #t)
-        (stat-add! stat w (cons 1 1))]))
+       (stat-all-inc! stat w)
+       (stat-doc-inc! stat doc-id w))
      word*)))
 
-;; todo: duplicate
-(define (text->vector text)
-  (let ([ht (make-hashtable string-hash string=?)]
-        [word* (string-split text #\space)])
-    (for-each
-     (^w (hashtable-set! ht w (+ (hashtable-ref ht w 0) 1)))
-     word*)
-    ht))
+;; ;; todo: duplicate
+;; (define (text->vector text)
+;;   (let ([ht (make-hashtable string-hash string=?)]
+;;         [word* (string-split text #\space)])
+;;     (for-each
+;;      (^w (hashtable-set! ht w (+ (hashtable-ref ht w 0) 1)))
+;;      word*)
+;;     ht))
 
 (define (test)
-  (let1 stat (make-empty-stat)
-    (analyze1 stat 'doc-1 "apple")
+  (let1 stat (make-stat)
+    (analyze1 stat 'doc1 "apple")
     (test-equal 1 (word-count stat 'doc1 "apple"))
     (test-equal 1 (document-count stat "apple")))
   (let1 stat (analyze '((doc1 . "apple orange apple")
