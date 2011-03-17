@@ -2,7 +2,7 @@
 ;;
 ;;   tf : Term Frequency, idf : Inverse Document Frequency
 (library (tfidf)
-         (export tfidf test)
+         (export test)
          (import (rnrs)
                  (shorten)
                  (match)
@@ -32,8 +32,12 @@
       (hashtable-set! (stat-doc stat) doc-id doc)
       (hashtable-set! doc word 1))]))
 
-(define (tfidf . x)
-  x)
+(define (tf stat doc-id word)
+  (let1 total (hashtable-fold-left (^(seed w count)
+                                   (+ seed count))
+                                 0 (hashtable-ref (stat-doc stat) doc-id #f))
+    (/ (word-count stat doc-id word) total)))
+
 
 (define (make-string-hashtable)
   (make-hashtable string-hash string=?))
