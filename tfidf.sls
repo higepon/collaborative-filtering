@@ -38,12 +38,12 @@
                                  0 (hashtable-ref (stat-doc stat) doc-id #f))
     (/ (word-count stat doc-id word) total)))
 
-;; (define (idf stat word)
-;;   (let* [num-documens (hashtable-size (stat-doc stat))]
-;;     [
-;;     (/ num-documens (hashtable-fold-left (^(seed w count)
-;;                                            (+ seed 1))
-;;                                          0 (hashtable-ref (stat-doc stat) doc-id #f))
+(define (idf stat word)
+  (let ([num-documens (hashtable-size (stat-doc stat))]
+        [num-doc-include-word (hashtable-fold-left (^(seed doc-id st)
+                                                     (+ seed (if (hashtable-ref st word #f) 1 0)))
+                                         0 (stat-doc stat))])
+    (log (/ num-documens (+ 1 num-doc-include-word)))))
 
 (define (make-string-hashtable)
   (make-hashtable string-hash string=?))
@@ -91,7 +91,9 @@
     (test-equal 1 (word-count stat 'doc2 "apple"))
     (test-equal 2 (document-count stat "apple"))
     (test-equal 2/3 (tf stat 'doc1 "apple"))
-    (test-equal 0 (idf stat "apple"))
-
+    (test-true (good-enough? (log (/ 2 3)) (idf stat "apple")))
+    (test-true (good-enough? (log (/ 2 2)) (idf stat "orange")))
   ))
+
+
 )
