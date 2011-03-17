@@ -79,7 +79,8 @@
     (test-true stat)
     (test-equal 2 (word-count stat 'doc1 "apple"))
     (test-equal 1 (word-count stat 'doc2 "apple"))
-    (test-equal 2 (document-count stat "apple")))
+    (test-equal 2 (document-count stat "apple"))
+    (test-equal 2/3 (tf stat 'doc1 "apple"))
 
-  )
+  ))
 )
