@@ -96,7 +96,6 @@
     (test-equal 2/3 (tf stat 'doc1 "apple"))
     (test-true (good-enough? (log (/ 2 3)) (idf stat "apple")))
     (test-true (good-enough? (log (/ 2 2)) (idf stat "orange")))
-
     (test-true (> (tf-idf stat 'doc1 "orange") (tf-idf stat 'doc1 "apple")))
   ))
 
