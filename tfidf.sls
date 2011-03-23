@@ -32,6 +32,9 @@
       (hashtable-set! (stat-doc stat) doc-id doc)
       (hashtable-set! doc word 1))]))
 
+(define (tf-idf stat doc-id word)
+  (* (tf stat doc-id word) (idf stat word)))
+
 (define (tf stat doc-id word)
   (let1 total (hashtable-fold-left (^(seed w count)
                                    (+ seed count))
