@@ -74,13 +74,17 @@
      document*)
     stat))
 
-(define (analyze1 stat doc-id document)
-  (let ([word* (string-split document #\space)])
-    (for-each
-     (^w
-       (stat-all-inc! stat w)
-       (stat-doc-inc! stat doc-id w))
-     word*)))
+(define analyze1
+  (match-lambda*
+   [(stat doc-id document)
+    (let ([word* (string-split document #\space)])
+      (for-each
+       (^w
+        (stat-all-inc! stat w)
+        (stat-doc-inc! stat doc-id w))
+       word*))]
+   [(doc-id document)
+    (analyze1 (make-stat) document document)]))
 
 (define (test)
   (let1 stat (make-stat)
