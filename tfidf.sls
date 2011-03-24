@@ -2,7 +2,7 @@
 ;;
 ;;   tf : Term Frequency, idf : Inverse Document Frequency
 (library (tfidf)
-         (export test analyze)
+         (export test analyze analyze1 tf-idf)
          (import (rnrs)
                  (shorten)
                  (match)
