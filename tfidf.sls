@@ -13,6 +13,8 @@
 (define-record-type stat
   (fields (immutable doc)
           (immutable all))
+  (nongenerative
+     tf-idf-stat)
   (protocol
    (lambda (c)
      (lambda ()
