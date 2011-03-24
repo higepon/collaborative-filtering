@@ -82,7 +82,8 @@
        (^w
         (stat-all-inc! stat w)
         (stat-doc-inc! stat doc-id w))
-       word*))]
+       word*)
+      stat)]
    [(doc-id document)
     (analyze1 (make-stat) document document)]))
 
