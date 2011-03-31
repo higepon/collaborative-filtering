@@ -35,7 +35,7 @@
                             [len (bytevector-length text)])
                        (mecab-node-surface* (mecab-sparse-tonode2 m text len))))])
 
-  (let loop ([name+path* (take (corpus-name+path*) 1000)]
+  (let loop ([name+path* (take (corpus-name+path*) 100)]
              [stat '()])
     (cond
      [(null? stat)
