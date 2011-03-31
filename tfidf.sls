@@ -10,15 +10,24 @@
                  (mosh control)
                  (mosh test))
 
-(define-record-type stat
-  (fields (immutable doc)
-          (immutable all))
-  (nongenerative
-     tf-idf-stat)
-  (protocol
-   (lambda (c)
-     (lambda ()
-       (c (make-eq-hashtable) (make-string-hashtable))))))
+;; (define-record-type stat
+;;   (fields (immutable doc)
+;;           (immutable all))
+;;   (nongenerative
+;;      tf-idf-stat)
+;;   (protocol
+;;    (lambda (c)
+;;      (lambda ()
+;;        (c (make-eq-hashtable) (make-string-hashtable))))))
+
+(define (stat-all stat)
+  (cdr stat))
+
+(define (stat-doc stat)
+  (car stat))
+
+(define (make-stat)
+  (cons (make-eq-hashtable) (make-string-hashtable)))
 
 (define (stat-all-inc! stat word)
   (let1 all (stat-all stat)
