@@ -67,18 +67,18 @@
    [else
     (error 'word-count "unknown doc-id" doc-id)]))
 
-(define (analyze document*)
+(define (analyze document* split-proc)
   (let1 stat (make-stat)
     (for-each
      (match-lambda
       [(doc-id . document)
-       (analyze1 stat doc-id document)])
+       (analyze1 stat doc-id document split-proc)])
      document*)
     stat))
 
 (define analyze1
   (match-lambda*
-   [(stat doc-id document)
+   [(stat doc-id document split-proc)
     (let ([word* (string-split document #\space)])
       (for-each
        (^w
@@ -86,16 +86,19 @@
         (stat-doc-inc! stat doc-id w))
        word*)
       stat)]
-   [(doc-id document)
-    (analyze1 (make-stat) document document)]))
+   [(doc-id document split-proc)
+    (analyze1 (make-stat) document document split-proc)]))
+
+(define (splib-by-space document)
+  (string-split document #\space))
 
 (define (test)
   (let1 stat (make-stat)
-    (analyze1 stat 'doc1 "apple")
+    (analyze1 stat 'doc1 "apple" splib-by-space)
     (test-equal 1 (word-count stat 'doc1 "apple"))
     (test-equal 1 (document-count stat "apple")))
   (let1 stat (analyze '((doc1 . "apple orange apple")
-                        (doc2 . "apple")))
+                        (doc2 . "apple")) splib-by-space)
     (test-true stat)
     (test-equal 2 (word-count stat 'doc1 "apple"))
     (test-equal 1 (word-count stat 'doc2 "apple"))
