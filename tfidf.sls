@@ -2,7 +2,7 @@
 ;;
 ;;   tf : Term Frequency, idf : Inverse Document Frequency
 (library (tfidf)
-         (export test analyze analyze1 tf-idf)
+         (export test analyze analyze1 tf-idf tf)
          (import (rnrs)
                  (shorten)
                  (match)
@@ -79,7 +79,7 @@
 (define analyze1
   (match-lambda*
    [(stat doc-id document split-proc)
-    (let ([word* (string-split document #\space)])
+    (let ([word* (split-proc document)])
       (for-each
        (^w
         (stat-all-inc! stat w)
@@ -87,7 +87,7 @@
        word*)
       stat)]
    [(doc-id document split-proc)
-    (analyze1 (make-stat) document document split-proc)]))
+    (analyze1 (make-stat) doc-id document split-proc)]))
 
 (define (splib-by-space document)
   (string-split document #\space))
