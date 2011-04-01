@@ -56,10 +56,12 @@
 (define (serialize-stat stat name)
   (when (file-exists? name)
     (delete-file name))
-  (write (cons (map (^x (cons (car x) (hashtable->alist (cdr x)))) (hashtable->alist (car stat))) (hashtable->alist (cdr stat))) (open-output-file name)))
+;  (write (cons (map (^x (cons (car x) (hashtable->alist (cdr x)))) (hashtable->alist (car stat))) (hashtable->alist (cdr stat))) (open-output-file name)))
+  (fasl-write (cons (map (^x (cons (car x) (hashtable->alist (cdr x)))) (hashtable->alist (car stat))) (hashtable->alist (cdr stat))) (open-file-output-port name)))
 
 (define (deserialize-stat name)
-  (let1 obj (read (open-input-file name))
+;  (let1 obj (read (open-input-file name))
+  (let1 obj (fasl-read (open-file-input-port name))
 ;    (write obj)
     (cons (alist->eq-hash-table2 (car obj)) (alist->string-hash-table (cdr obj)))))
 
