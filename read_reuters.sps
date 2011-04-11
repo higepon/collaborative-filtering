@@ -73,6 +73,7 @@
    [(null? name+path*)
     (serialize-stat stat "./hoge")
     (analyze1 stat 'earthquake-news1 (split earthquake-news2))
+    (freeze-stat! stat)
     (let1 word* (uniq (split earthquake-news2))
       (for-each (^w (write w) (newline)) (take (list-sort (^(x y) (> (cdr x) (cdr y))) (map (^w (cons w (tf-idf stat 'earthquake-news1 w))) word*)) 10)))]
    [else

@@ -2,7 +2,7 @@
 ;;
 ;;   tf : Term Frequency, idf : Inverse Document Frequency
 (library (tfidf)
-         (export test analyze analyze1 tf-idf tf)
+         (export test analyze analyze1 tf-idf tf freeze-stat!)
          (import (rnrs)
                  (shorten)
                  (match)
@@ -49,7 +49,7 @@
 (define (make-string-hashtable)
   (make-hashtable string-hash string=?))
 
-
+;; move
 (define
   (uniq lst)
   (let loop
@@ -61,7 +61,10 @@
 
 
 (define (document-count stat word)
-  (length (uniq (hashtable-ref (stat-count stat) word '()))))
+  (let1 x (hashtable-ref (stat-count stat) word '())
+    (if (pair? x)
+        (length (uniq x))
+        x)))
   ;; (hashtable-fold-left
   ;;  (^(seed key st)
   ;;    (+ seed (if (hashtable-ref st word #f) 1 0)))
@@ -83,6 +86,13 @@
        (analyze1 stat doc-id word*)])
      document*)
     stat))
+
+(define (freeze-stat! stat)
+  (let ([ht (stat-count stat)])
+    (hashtable-for-each
+     (^(key value)
+       (hashtable-set! ht key (length (uniq value))))
+     ht)))
 
 (define analyze1
   (match-lambda*
