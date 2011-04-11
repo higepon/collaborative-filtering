@@ -14,7 +14,7 @@
   (car stat))
 
 (define (make-stat)
-  (cons (make-eq-hashtable) (make-string-hashtable)))
+  (cons (make-eq-hashtable) '()))
 
 (define (stat-doc-inc! stat doc-id word)
   (cond
