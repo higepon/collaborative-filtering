@@ -2,13 +2,46 @@
 ;;
 ;;   tf : Term Frequency, idf : Inverse Document Frequency
 (library (tfidf)
-         (export test analyze analyze1 tf-idf tf freeze-stat!)
+         (export test analyze analyze1 tf-idf tf freeze-stat! serialize-stat deserialize-stat)
          (import (rnrs)
                  (shorten)
                  (match)
                  (mosh)
                  (mosh control)
                  (mosh test))
+
+(define (serialize-stat stat name)
+  (when (file-exists? name)
+    (delete-file name))
+  (fasl-write (cons
+               (map (^x (cons (car x) (hashtable->alist (cdr x)))) (hashtable->alist (car stat)))
+               (hashtable->alist (cdr stat))) (open-file-output-port name)))
+
+(define (hashtable->alist ht)
+  (hashtable-map cons ht))
+
+(define (hashtable-map proc ht)
+  (let1 keys (vector->list (hashtable-keys ht))
+    (map
+     (lambda (key)
+       (proc key (hashtable-ref ht key)))
+     keys)))
+
+(define (alist->string-hash-table alist)
+  (let ([hashtable (make-hashtable string-hash string=?)])
+    (for-each (lambda (x) (hashtable-set! hashtable (car x) (cdr x)))
+              alist)
+    hashtable))
+
+
+(define (deserialize-stat name)
+  (let1 obj (fasl-read (open-file-input-port name))
+    (cons (let ([hashtable (make-eq-hashtable)])
+            (for-each (lambda (x) (hashtable-set! hashtable (car x) (alist->string-hash-table (cdr x))))
+                      (car obj))
+            hashtable)
+          (alist->string-hash-table (cdr obj)))))
+
 
 (define (stat-doc stat)
   (car stat))

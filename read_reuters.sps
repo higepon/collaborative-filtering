@@ -29,41 +29,11 @@
 (define (split doc)
   (string-split doc #\space))
 
-(define (hashtable-map proc ht)
-  (let1 keys (vector->list (hashtable-keys ht))
-    (map
-     (lambda (key)
-       (proc key (hashtable-ref ht key)))
-     keys)))
-
-(define (hashtable->alist ht)
-  (hashtable-map cons ht))
-
-(define (alist->string-hash-table alist)
-  (let ([hashtable (make-hashtable string-hash string=?)])
-    (for-each (lambda (x) (hashtable-set! hashtable (car x) (cdr x)))
-              alist)
-    hashtable))
 
 
-(define (alist->eq-hash-table2 alist)
-  (let ([hashtable (make-eq-hashtable)])
-    (for-each (lambda (x) (hashtable-set! hashtable (car x) (alist->string-hash-table (cdr x))))
-              alist)
-    hashtable))
 
 
-(define (serialize-stat stat name)
-  (when (file-exists? name)
-    (delete-file name))
-;  (write (cons (map (^x (cons (car x) (hashtable->alist (cdr x)))) (hashtable->alist (car stat))) (hashtable->alist (cdr stat))) (open-output-file name)))
-  (fasl-write (cons (map (^x (cons (car x) (hashtable->alist (cdr x)))) (hashtable->alist (car stat))) (hashtable->alist (cdr stat))) (open-file-output-port name)))
 
-(define (deserialize-stat name)
-;  (let1 obj (read (open-input-file name))
-  (let1 obj (fasl-read (open-file-input-port name))
-;    (write obj)
-    (cons (alist->eq-hash-table2 (car obj)) (alist->string-hash-table (cdr obj)))))
 
 #;(let loop ([name+path* (corpus-name+path*)]
            [stat '()])
