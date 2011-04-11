@@ -49,11 +49,23 @@
 (define (make-string-hashtable)
   (make-hashtable string-hash string=?))
 
+
+(define
+  (uniq lst)
+  (let loop
+       ((lst lst) (ret (quote ())))
+       (cond ((null? lst) ret)
+             (else (if (member (car lst) ret)
+                       (loop (cdr lst) ret)
+                       (loop (cdr lst) (cons (car lst) ret)))))))
+
+
 (define (document-count stat word)
-  (hashtable-fold-left
-   (^(seed key st)
-     (+ seed (if (hashtable-ref st word #f) 1 0)))
-   0 (stat-doc stat)))
+  (length (uniq (hashtable-ref (stat-count stat) word '()))))
+  ;; (hashtable-fold-left
+  ;;  (^(seed key st)
+  ;;    (+ seed (if (hashtable-ref st word #f) 1 0)))
+  ;;  0 (stat-doc stat)))
 
 (define (word-count stat doc-id word)
   (cond
