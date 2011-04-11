@@ -10,16 +10,6 @@
                  (mosh control)
                  (mosh test))
 
-;; (define-record-type stat
-;;   (fields (immutable doc)
-;;           (immutable all))
-;;   (nongenerative
-;;      tf-idf-stat)
-;;   (protocol
-;;    (lambda (c)
-;;      (lambda ()
-;;        (c (make-eq-hashtable) (make-string-hashtable))))))
-
 (define (stat-all stat)
   (cdr stat))
 
@@ -29,8 +19,10 @@
 (define (make-stat)
   (cons (make-eq-hashtable) (make-string-hashtable)))
 
-(define (stat-all-inc! stat word)
-  (let1 all (stat-all stat)
+(define (stat-all-inc! stat doc-id word)
+  (let ([all (stat-all stat)]
+        [doc-key (string-append word ":doc")])
+    (hashtable-set! all doc-key (cons doc-id (hashtable-ref all doc-key '())))
     (hashtable-set! all word (+ 1 (hashtable-ref all word 0)))))
 
 (define (stat-doc-inc! stat doc-id word)
@@ -54,9 +46,7 @@
 
 (define (idf stat word)
   (let ([num-documens (hashtable-size (stat-doc stat))]
-        [num-doc-include-word (hashtable-fold-left (^(seed doc-id st)
-                                                     (+ seed (if (hashtable-ref st word #f) 1 0)))
-                                         0 (stat-doc stat))])
+        [num-doc-include-word (document-count stat word)])
     (log (/ num-documens (+ 1 num-doc-include-word)))))
 
 (define (make-string-hashtable)
@@ -90,7 +80,7 @@
    [(stat doc-id word*)
     (for-each
      (^w
-      (stat-all-inc! stat w)
+      (stat-all-inc! stat doc-id w)
       (stat-doc-inc! stat doc-id w))
      word*)
       stat]
