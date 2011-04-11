@@ -13,8 +13,11 @@
 (define (stat-doc stat)
   (car stat))
 
+(define (stat-count stat)
+  (cdr stat))
+
 (define (make-stat)
-  (cons (make-eq-hashtable) '()))
+  (cons (make-eq-hashtable) (make-string-hashtable)))
 
 (define (stat-doc-inc! stat doc-id word)
   (cond
@@ -25,6 +28,9 @@
     (let1 doc (make-string-hashtable)
       (hashtable-set! (stat-doc stat) doc-id doc)
       (hashtable-set! doc word 1))]))
+
+(define (stat-add-for-count! stat doc-id word)
+  (hashtable-set! (stat-count stat) word (cons doc-id (hashtable-ref (stat-count stat) word '()))))
 
 (define (tf-idf stat doc-id word)
   (* (tf stat doc-id word) (idf stat word)))
@@ -71,7 +77,8 @@
    [(stat doc-id word*)
     (for-each
      (^w
-      (stat-doc-inc! stat doc-id w))
+      (stat-doc-inc! stat doc-id w)
+      (stat-add-for-count! stat doc-id w))
      word*)
       stat]
    [(doc-id word*)
