@@ -92,7 +92,6 @@
                        (loop (cdr lst) ret)
                        (loop (cdr lst) (cons (car lst) ret)))))))
 
-
 (define (document-count stat word)
   (let1 x (hashtable-ref (stat-count stat) word '())
     (if (pair? x)
