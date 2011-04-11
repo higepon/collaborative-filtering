@@ -65,18 +65,18 @@
 ;    (write obj)
     (cons (alist->eq-hash-table2 (car obj)) (alist->string-hash-table (cdr obj)))))
 
-#;(let loop ([name+path* (corpus-name+path*)]
-           [stat '()])
-  (cond
-   [(null? stat)
-    (loop (cdr name+path*) (analyze1 (caar name+path*) (split (file->string (cdar name+path*)))))]
-   [(null? name+path*)
-    (serialize-stat stat "./hoge")
-    (analyze1 stat 'earthquake-news1 (split earthquake-news2))
-    (let1 word* (uniq (split earthquake-news2))
-      (for-each (^w (write w) (newline)) (take (list-sort (^(x y) (> (cdr x) (cdr y))) (map (^w (cons w (tf-idf stat 'earthquake-news1 w))) word*)) 10)))]
-   [else
-    (loop (cdr name+path*) (analyze1 stat (caar name+path*) (split (file->string (cdar name+path*)))))]))
+;; (let loop ([name+path* (corpus-name+path*)]
+;;            [stat '()])
+;;   (cond
+;;    [(null? stat)
+;;     (loop (cdr name+path*) (analyze1 (caar name+path*) (split (file->string (cdar name+path*)))))]
+;;    [(null? name+path*)
+;;     (serialize-stat stat "./hoge")
+;;     (analyze1 stat 'earthquake-news1 (split earthquake-news2))
+;;     (let1 word* (uniq (split earthquake-news2))
+;;       (for-each (^w (write w) (newline)) (take (list-sort (^(x y) (> (cdr x) (cdr y))) (map (^w (cons w (tf-idf stat 'earthquake-news1 w))) word*)) 10)))]
+;;    [else
+;;     (loop (cdr name+path*) (analyze1 stat (caar name+path*) (split (file->string (cdar name+path*)))))]))
 
 (let1 stat (deserialize-stat "./hoge")
   (analyze1 stat 'earthquake-news1 (split earthquake-news2))

@@ -10,20 +10,11 @@
                  (mosh control)
                  (mosh test))
 
-(define (stat-all stat)
-  (cdr stat))
-
 (define (stat-doc stat)
   (car stat))
 
 (define (make-stat)
   (cons (make-eq-hashtable) (make-string-hashtable)))
-
-(define (stat-all-inc! stat doc-id word)
-  (let ([all (stat-all stat)]
-        [doc-key (string-append word ":doc")])
-    (hashtable-set! all doc-key (cons doc-id (hashtable-ref all doc-key '())))
-    (hashtable-set! all word (+ 1 (hashtable-ref all word 0)))))
 
 (define (stat-doc-inc! stat doc-id word)
   (cond
@@ -80,7 +71,6 @@
    [(stat doc-id word*)
     (for-each
      (^w
-      (stat-all-inc! stat doc-id w)
       (stat-doc-inc! stat doc-id w))
      word*)
       stat]
