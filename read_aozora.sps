@@ -42,7 +42,6 @@
      [(null? stat)
       (loop (cdr name+path*) (analyze1 (caar name+path*) (split-proc (file->string (cdar name+path*)))))]
      [(null? name+path*)
-      (write (split-proc "hello wolrd yeah!"))
       (analyze1 stat 'news (split-proc news-text))
       (let1 word* (uniq (split-proc news-text))
         (for-each (^w (write w) (newline)) (take (list-sort (^(x y) (> (cdr x) (cdr y))) (map (^w (cons w (tf-idf stat 'news w))) word*)) 10)))]
