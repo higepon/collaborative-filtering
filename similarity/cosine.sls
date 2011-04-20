@@ -6,9 +6,15 @@
                  (mosh control)
                  (mosh test))
 
+(define (alist->string-hashtable alist)
+  (let ([hashtable (make-hashtable string-hash string=?)])
+    (for-each (lambda (x) (hashtable-set! hashtable (car x) (cdr x)))
+              alist)
+    hashtable))
+
 (define (similarity lhs rhs)
-  (let ([lvec (text->vector lhs)]
-        [rvec (text->vector rhs)])
+  (let ([lvec (alist->string-hashtable lhs)]
+        [rvec (alist->string-hashtable rhs)])
     (/ (innter-product lvec rvec) (* (norm lvec) (norm rvec)))))
 
 (define (text->vector text)
@@ -42,12 +48,10 @@
   (define vec1 '(("America" . 1) ("Canada" . 2) ("Japan" . 1)))
   (define vec2 '(("America" . 1) ("Korea" . 1)))
   (define vec3 '(("America" . 1) ("Canada" . 2) ("Korea" . 1)))
-  (test-true (> (similarity vec1 vec2) (similarity vec1 vec3)))
-  (let1 v (text->vector "orange apple orange")
-    (test-equal 2 (hashtable-size v))
-    (test-equal 1 (hashtable-ref v "apple" 0))
-    (test-equal 2 (hashtable-ref v "orange" 0))
-    (test-true (good-enough? 2.2360 (norm v))))
+
+  (test-true (good-enough? 1.0 (similarity vec1 vec1)))
+  (test-true (< (similarity vec1 vec2) (similarity vec1 vec3)))
+  (test-true (< (similarity vec1 vec2) (similarity vec2 vec3)))
 )
 
 )
