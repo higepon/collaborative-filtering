@@ -17,14 +17,6 @@
         [rvec (alist->string-hashtable rhs)])
     (/ (innter-product lvec rvec) (* (norm lvec) (norm rvec)))))
 
-(define (text->vector text)
-  (let ([ht (make-hashtable string-hash string=?)]
-        [word* (string-split text #\space)])
-    (for-each
-     (^w (hashtable-set! ht w (+ (hashtable-ref ht w 0) 1)))
-     word*)
-    ht))
-
 (define (norm v)
   (sqrt (hashtable-fold-left
          (^(seed key value)
@@ -38,7 +30,6 @@
      [(null? key*) ret]
      [(hashtable-ref rhs (car key*) #f) =>
       (^(value)
-;        (format #t "key=~a (* ~a ~a) = ~a\n" (car key*) (hashtable-ref lhs (car key*) #f) value (* (hashtable-ref lhs (car key*) #f) value))
         (loop (cdr key*)
               (+ ret (* (hashtable-ref lhs (car key*) #f) value))))]
      [else
