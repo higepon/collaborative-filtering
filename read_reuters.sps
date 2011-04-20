@@ -52,7 +52,7 @@
 (let1 stat (deserialize-stat "./hoge")
 ;  (analyze1 stat 'earthquake-news1 (split earthquake-news2))
   (let1 word* (uniq (split earthquake-news2))
-    (for-each (^w (write w) (newline)) (take (list-sort (^(x y) (> (cdr x) (cdr y))) (map (^w (cons w (tf-idf stat 'earthquake-news1 w))) word*)) 10))))
+(take (list-sort (^(x y) (> (cdr x) (cdr y))) (map (^w (cons w (tf-idf stat 'earthquake-news1 w))) word*)) 10))))
 
 
 

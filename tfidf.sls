@@ -2,7 +2,7 @@
 ;;
 ;;   tf : Term Frequency, idf : Inverse Document Frequency
 (library (tfidf)
-         (export test analyze analyze1 tf-idf tf freeze-stat! serialize-stat deserialize-stat)
+         (export test analyze analyze1 tf-idf tf freeze-stat! serialize-stat deserialize-stat word-count)
          (import (rnrs)
                  (shorten)
                  (match)

@@ -39,6 +39,10 @@
       (loop (cdr key*) ret)])))
 
 (define (test)
+  (define vec1 '(("America" . 1) ("Canada" . 2) ("Japan" . 1)))
+  (define vec2 '(("America" . 1) ("Korea" . 1)))
+  (define vec3 '(("America" . 1) ("Canada" . 2) ("Korea" . 1)))
+  (test-true (> (similarity vec1 vec2) (similarity vec1 vec3)))
   (let1 v (text->vector "orange apple orange")
     (test-equal 2 (hashtable-size v))
     (test-equal 1 (hashtable-ref v "apple" 0))
