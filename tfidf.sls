@@ -97,10 +97,6 @@
     (if (pair? x)
         (length (uniq x))
         x)))
-  ;; (hashtable-fold-left
-  ;;  (^(seed key st)
-  ;;    (+ seed (if (hashtable-ref st word #f) 1 0)))
-  ;;  0 (stat-doc stat)))
 
 (define (word-count stat doc-id word)
   (cond
