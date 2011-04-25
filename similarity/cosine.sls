@@ -24,16 +24,14 @@
          0 v)))
 
 (define (innter-product lhs rhs)
-  (let loop ([key* (vector->list (hashtable-keys lhs))]
-             [ret 0.0])
-    (cond
-     [(null? key*) ret]
-     [(hashtable-ref rhs (car key*) #f) =>
-      (^(value)
-        (loop (cdr key*)
-              (+ ret (* (hashtable-ref lhs (car key*) #f) value))))]
-     [else
-      (loop (cdr key*) ret)])))
+  (hashtable-fold-left
+   (^(accum key lvalue)
+     (cond
+      [(hashtable-ref rhs key #f) =>
+       (^(rvalue)
+         (+ accum (*  rvalue lvalue)))]
+      [else accum]))
+   0.0 lhs))
 
 (define (test)
   (define vec1 '(("America" . 1) ("Canada" . 2) ("Japan" . 1)))
