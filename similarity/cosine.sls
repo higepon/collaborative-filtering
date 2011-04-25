@@ -40,6 +40,10 @@
   (define vec2 '(("America" . 1) ("Korea" . 1)))
   (define vec3 '(("America" . 1) ("Canada" . 2) ("Korea" . 1)))
 
+  (test-equal 6.0 (innter-product (alist->string-hashtable vec1) (alist->string-hashtable vec1)))
+  (test-equal 1.0 (innter-product (alist->string-hashtable vec1) (alist->string-hashtable vec2)))
+  (test-equal 2.0 (innter-product (alist->string-hashtable vec2) (alist->string-hashtable vec3)))
+  (test-equal 5.0 (innter-product (alist->string-hashtable vec1) (alist->string-hashtable vec3)))
   (test-true (good-enough? 1.0 (similarity vec1 vec1)))
   (test-true (< (similarity vec1 vec2) (similarity vec1 vec3)))
   (test-true (< (similarity vec1 vec2) (similarity vec2 vec3)))
